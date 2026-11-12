@@ -99,6 +99,8 @@ button.tile.used{opacity:.2;pointer-events:none}
 
 .roll{position:fixed;left:-80px;top:40%;font-size:56px;z-index:80;pointer-events:none;animation:roll 2.4s linear forwards}
 @keyframes roll{to{left:110vw;transform:rotate(1080deg)}}
+.zoom{position:fixed;right:-90px;top:30%;font-size:60px;z-index:80;pointer-events:none;animation:zoom 1.6s cubic-bezier(.6,0,.3,1) forwards}
+@keyframes zoom{to{right:110vw}}
 
 .burst{position:fixed;pointer-events:none;z-index:90;color:var(--rose);font-size:var(--s);left:var(--x);top:var(--y);animation:burst 1.3s cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes burst{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
@@ -279,7 +281,7 @@ footer .verse{font-family:var(--serif);font-style:italic;font-size:1.3rem;color:
       <p>Que o Senhor continue sendo o centro da nossa história. Que venham muitos outros anos, muitos sonhos e um futuro inteiro pra gente construir juntos.</p>
       <p>Te amo, hoje e sempre.</p>
       <div class="sign">Seu, Nathan</div>
-      <div class="ps">P.S.: Cacau &amp; Rocambole pra sempre. 🍫</div>
+      <div class="ps">P.S.: Nathan &amp; Ester pra sempre. ♥</div>
     </article>
   </section>
 
@@ -333,18 +335,19 @@ const Q=[
   }
  },
  { // 2
-  render(){return `<div class="qnum">pergunta 2 de 4</div><p class="qtext">Complete:<br><span style="color:var(--rose)">“Cacau e …”</span></p>
-   <input class="field" id="ans" placeholder="…" autocomplete="off"><div class="row"><button class="btn" id="go">Responder</button></div><div class="hint" id="hint"></div><div id="extra"></div>`},
-  check(){return /rocambole|rocanbole|rocambolle/.test(norm($('#ans').value))},
-  hint(t){
-   if(t===1){const r=document.createElement('div');r.className='roll';r.textContent='🍥';document.body.appendChild(r);setTimeout(()=>r.remove(),2500);
-     return 'Olha ele passando rolando ali… é <b>docinho</b> e é <b>enrolado</b> 🌀';}
-   if(t===2) return 'Começa com <b>R</b>, termina com <b>E</b>:<div class="tiles">'+[...'ROCAMBOLE'].map((c,i)=>`<span class="tile ${i===0||i===8?'shown':''}">${i===0||i===8?c:''}</span>`).join('')+'</div>';
-   const letters=[...'ROCAMBOLE'].sort(()=>Math.random()-.5);
-   setTimeout(()=>{document.querySelectorAll('#extra .tile').forEach(b=>b.onclick=()=>{$('#ans').value+=b.textContent.toLowerCase();b.classList.add('used')});},0);
-   $('#extra').innerHTML='<div class="tiles">'+letters.map(c=>`<button class="tile">${c}</button>`).join('')+'</div><div class="row"><button class="btn ghost" id="clr" style="padding:6px 16px;font-size:.85rem">limpar</button></div>';
-   setTimeout(()=>{$('#clr').onclick=()=>{$('#ans').value='';document.querySelectorAll('#extra .tile').forEach(b=>b.classList.remove('used'))}},0);
-   return 'Monta aí com as letrinhas embaralhadas 👇';
+  render(){return `<div class="qnum">pergunta 2 de 4</div><p class="qtext">Qual é a minha equipe preferida? 🏁</p>
+   <div class="row"><button class="btn ghost team" data-t="ferrari">Ferrari</button><button class="btn ghost team" data-t="mercedes">Mercedes</button><button class="btn ghost team" data-t="mclaren">McLaren</button></div><div class="hint" id="hint"></div>`},
+  custom(){
+   let errs=0;
+   const lines=['Pensa numa cor… a cor do amor ❤️','Tem um <b>cavalinho</b> empinado no escudo 🐎','É italiana, vermelha e apaixonante — igual eu por você 😌'];
+   document.querySelectorAll('.team').forEach(b=>b.onclick=()=>{
+     if(b.dataset.t==='ferrari') return correct(b);
+     wrong();errs++;
+     b.style.transition='transform .7s ease, opacity .7s';b.style.transform='rotate(540deg) scale(.3)';b.style.opacity=0;b.style.pointerEvents='none';
+     const car=document.createElement('div');car.className='zoom';car.textContent='🏎️';document.body.appendChild(car);setTimeout(()=>car.remove(),1700);
+     const f=document.querySelector('[data-t=ferrari]');f.style.background='#c8102e';f.style.borderColor='#c8102e';if(errs>1)f.classList.add('pulse');
+     const h=$('#hint');h.innerHTML='Rodou na curva! 💨 '+lines[Math.min(errs-1,2)];h.classList.remove('fade-in');void h.offsetWidth;h.classList.add('fade-in');
+   });
   }
  },
  { // 3
